@@ -30,7 +30,7 @@ public class UserController {
 	/**
 	 * To add User
 	 * 
-	 * @param user
+	 * @param req
 	 */
 	@PostMapping("/users")
 	@Operation(summary = "To add User", tags = "Users")
