@@ -1,21 +1,20 @@
 package com.project.service;
 
-import java.util.List;
-import java.util.Map;
-
+import com.project.dto.UserRequest;
+import com.project.entity.User;
 import org.springframework.http.ResponseEntity;
 
-import com.project.dto.User;
+import java.util.List;
 
 public interface UserService {
 
-	public ResponseEntity<User> addUser(User req);
+    public ResponseEntity<User> addUser(UserRequest req);
 
-	public ResponseEntity<List<User>> getAllUsers();
+    public ResponseEntity<List<User>> getAllUsers();
 
-	public ResponseEntity<User> getUserById(int id);
+    public ResponseEntity<User> getUserById(int id);
 
-	public ResponseEntity<User> updateUser(User user);
+    public ResponseEntity<User> updateUser(int id, UserRequest req);
 
-	public ResponseEntity<Map<String, Boolean>> deleteUser(int id);
+    public ResponseEntity<String> deleteUser(int id);
 }

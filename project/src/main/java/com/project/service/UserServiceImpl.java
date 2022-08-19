@@ -1,67 +1,61 @@
 package com.project.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.project.dao.UserDao;
+import com.project.dto.UserRequest;
+import com.project.entity.User;
+import com.project.exception.UserNotFoundException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.project.dao.UserDao;
-import com.project.dto.User;
-import com.project.exception.UserNotFoundException;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-	@Autowired
-	UserDao dao;
+    @Autowired
+    UserDao dao;
 
-	@Override
-	public ResponseEntity<User> addUser(User req) {
-		User user = dao.save(req);
-		return ResponseEntity.ok(user);
-	}
+    @Override
+    public ResponseEntity<User> addUser(UserRequest req) {
 
-	@Override
-	public ResponseEntity<List<User>> getAllUsers() {
+        User user = new User();
+        BeanUtils.copyProperties(req, user);
+        User response = dao.save(user);
+        return ResponseEntity.ok(response);
+    }
 
-		List<User> users = dao.findAll();
-//		UserResponse resp = new UserResponse();
-//		resp.setUsers(users);
+    @Override
+    public ResponseEntity<List<User>> getAllUsers() {
 
-		return ResponseEntity.ok(users);
-	}
+        List<User> users = dao.findAll();
+        return ResponseEntity.ok(users);
+    }
 
-	@Override
-	public ResponseEntity<User> getUserById(int id) {
+    @Override
+    public ResponseEntity<User> getUserById(int id) {
 
-		try {
-			User user = dao.findById(id).get();
-			return ResponseEntity.status(HttpStatus.OK).body(user);
-		} catch (Exception e) {
-			throw new UserNotFoundException("User Not Found");
-		}
+        User user = dao.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!!"));
+        return ResponseEntity.ok(user);
+    }
 
-	}
+    @Override
+    public ResponseEntity<User> updateUser(int id, UserRequest req) {
 
-	@Override
-	public ResponseEntity<User> updateUser(User user) {
+        User user = dao.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!!"));
+        BeanUtils.copyProperties(req, user);
+        user = dao.save(user);
+        return ResponseEntity.ok(user);
+    }
 
-		User resp = dao.save(user);
-		return ResponseEntity.ok(resp);
-	}
+    @Override
+    public ResponseEntity<String> deleteUser(int id) {
 
-	@Override
-	public ResponseEntity<Map<String, Boolean>> deleteUser(int id) {
-		dao.deleteById(id);
+        dao.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!!"));
+        dao.deleteById(id);
 
-		Map<String, Boolean> resp = new HashMap<>();
-		resp.put("Deleted", Boolean.TRUE);
-
-		return ResponseEntity.ok(resp);
-	}
+        return ResponseEntity.ok("Deleted");
+    }
 
 }
